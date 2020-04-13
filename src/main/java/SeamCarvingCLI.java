@@ -4,13 +4,13 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.Scanner;
 
-public class main {
+public class SeamCarvingCLI {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         BufferedImage srcImg = null;
         try {
             srcImg = ImageIO.read(new File(args[0]));
-            System.out.println("Imeage read\n");
+            System.out.println("Image read\n");
             System.out.print("new height (original is " + srcImg.getHeight() + "):\t");
             int outHeight = Integer.parseInt(sc.nextLine());
             System.out.print("new width (original is " + srcImg.getWidth() + "):\t");
@@ -24,6 +24,7 @@ public class main {
     }
 
     private static void runSeamCurving(BufferedImage img, int outHeight, int outWidth) throws TooManySeamsException {
+        BufferedImage gsImg = toGrayscale(img);
         SeamCarver sc = new SeamCarver(img, outWidth, false);
         img = sc.Resize();
         sc = new SeamCarver(Utils.RotateClockwise(img), outHeight, true);
@@ -36,5 +37,10 @@ public class main {
             ex.printStackTrace();
             System.exit(1);
         }
+    }
+
+    // TODO: implement
+    private static BufferedImage toGrayscale(BufferedImage img) {
+        return null;
     }
 }
