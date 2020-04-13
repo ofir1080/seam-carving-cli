@@ -87,34 +87,50 @@ public class SeamCarver extends FunctionalForLoops {
         return e1 + e2;
     }
 
-    private long getMinCost(int y, int x, int origX) {
-        int neighborCostMiddle = 0;
-        int neighborCostLeft = 0;
-        int neighborCostRight = 0;
+    private long getMinCost(int y, int x, int actualX) {
+        int minValIdx;
+        int rightLeftGrad = 0;
+        int leftGrad = 0;
+        int rightGrad = 0;
         long cLeft = 0;
         long cRight = 0;
         long cMiddle = 0;
+        int actualLeftNeighbor = -1;
+        int actualRightNeighbor = -1;
 
-        neighborCostMiddle = ((origX != 0 && origX != this.inWidth - 1) ? Math.abs(this.imgMat[y][origX - 1] - this.imgMat[y][origX + 1]) : 0);
-        if (y == 0) return neighborCostMiddle;
+//		if (origX == 0 || origX == this.inWidth - 1) {
+//			neighborCostMiddle = 0;
+//		}
+
+        if (y == 0) return 0;
+
+        if (x > 0) actualLeftNeighbor = (int) this.idxMat[y].get(x - 1);
+        if (x < this.idxMat[0].size() - 1) actualRightNeighbor = (int) this.idxMat[y].get(x + 1);
+
+        rightLeftGrad = (x > 0 && x < this.idxMat[0].size() - 1) ?
+                Math.abs(this.imgMat[y][actualLeftNeighbor] - this.imgMat[y][actualRightNeighbor]) :
+                255;
 
         cMiddle = this.costMat[y - 1][x];
+
         if (x > 0) {
             cLeft = this.costMat[y - 1][x - 1];
-            neighborCostLeft = Math.abs(this.imgMat[y][origX - 1] - this.imgMat[y - 1][origX]);
+            leftGrad = Math.abs(this.imgMat[y][actualLeftNeighbor]
+                    - this.imgMat[y - 1][actualX]);
         } else cLeft = Long.MAX_VALUE / 2;
 
         if (x < this.costMat[0].length - 1) {
             cRight = this.costMat[y - 1][x + 1];
-            neighborCostRight = Math.abs(this.imgMat[y][origX + 1] - this.imgMat[y - 1][origX]);
+            rightGrad = Math.abs(this.imgMat[y][actualRightNeighbor]
+                    - this.imgMat[y - 1][actualX]);
         } else cRight = Long.MAX_VALUE / 2;
 
-        long[] results = {cLeft + neighborCostLeft + neighborCostMiddle,
-                cMiddle + neighborCostMiddle + neighborCostMiddle,
-                cRight + neighborCostRight + neighborCostMiddle};
+        long[] results = {cLeft + leftGrad + rightLeftGrad,
+                cMiddle + rightLeftGrad,
+                cRight + rightGrad + rightLeftGrad};
 
-        int minValIdx = Utils.GetArgmin(results);
-        this.bestParentMat[y][x] = x + minValIdx - 1;
+        minValIdx = Utils.GetArgmin(results);
+        this.bestParentMat[y][x] = minValIdx - 1;
 
         return results[minValIdx];
     }
