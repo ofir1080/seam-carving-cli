@@ -25,7 +25,7 @@ public class SeamCarvingCLI {
 
     private static void runSeamCurving(BufferedImage img, int outHeight, int outWidth) throws TooManySeamsException {
         BufferedImage gsImg = toGrayscale(img);
-        SeamCarver sc = new SeamCarver(img, outWidth, false);
+        SeamCarver sc = new SeamCarver(gsImg, outWidth, false);
         img = sc.Resize();
         sc = new SeamCarver(Utils.RotateClockwise(img), outHeight, true);
         img = sc.Resize();
